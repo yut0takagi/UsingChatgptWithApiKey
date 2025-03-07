@@ -8,8 +8,13 @@
 pipenv shell
 pipenv install -r requirements.txt
 ```
-## 3. wsgiを用いてrun
+## 3. 環境変数として定義
+以下のサイトを参照して設定してください。
+[URL](https://www.javadrive.jp/command/command/index4.html#section4)
+
+## 4. wsgiを用いてrun
 ```zsh
 Python3 wsgi.py
 ```
+
 
