@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChatGPTチャット</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen px-4">
+  <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-xl p-6">
+    <h1 class="text-2xl font-bold text-center mb-4">💬 ChatGPTチャット</h1>
+
+    <!-- モデル選択 -->
+    <div class="mb-4">
+      <label class="block mb-1 text-sm text-gray-300">モデル選択:</label>
+      <select id="model" class="w-full bg-gray-700 p-2 rounded-lg">
+        <option value="gpt-3.5-turbo" selected>gpt-3.5-turbo</option>
+        <option value="gpt-4">gpt-4</option>
+      </select>
+    </div>
+
+    <!-- チャットボックス -->
+    <div id="chat-box" class="h-80 overflow-y-auto bg-gray-700 rounded-lg p-4 space-y-4 mb-4 text-sm"></div>
+
+    <!-- 入力欄 -->
+    <div class="flex gap-2 mb-6">
+      <input id="message" type="text" placeholder="メッセージを入力"
+        class="flex-grow bg-gray-600 text-white p-2 rounded-lg focus:outline-none" />
+      <button onclick="sendMessage()"
+        class="bg-white text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-300 transition">送信</button>
+    </div>
+
+    <button type="submit"
+        class="flex items-center gap-2 bg-white text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"/>
+        </svg>
+        アップロード
+    </button>
+    <div id="upload-status" class="text-sm mt-2 text-green-400"></div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById("message").value;
+      const model = document.getElementById("model").value;
+      if (!message) return;
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div><strong class="text-blue-400">あなた:</strong> ${message}</div>`;
+
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, model }),
+      });
+
+      const data = await response.json();
+      chatBox.innerHTML += `<div><strong class="text-green-400">GPT:</strong> ${data.reply}</div>`;
+      document.getElementById("message").value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fileInput = document.getElementById("file-input");
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  document.getElementById("upload-status").innerText = data.message;
+
+  // ファイルをGPTに送る（自動処理）
+  const model = document.getElementById("model").value;
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML += `<div><strong class="text-blue-400">あなた:</strong> ${data.filename} を送信しました</div>`;
+
+  const chatRes = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: "", model, filename: data.filename }),
+  });
+
+  const chatData = await chatRes.json();
+  chatBox.innerHTML += `<div><strong class="text-green-400">GPT:</strong> ${chatData.reply}</div>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+  </script>
+</body>
+</html>
