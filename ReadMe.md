@@ -20,15 +20,14 @@
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/yut0takagi/chatgpt-flask-app.git
-cd chatgpt-flask-app
+git clone https://github.com/yut0takagi/UsingChatgptWithApiKey.git
+cd UsingChatgptWithApiKey
 ```
 
-### 2. 仮想環境の作成（任意）
+### 2. 仮想環境に入る
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # Windowsの場合: venv\Scripts\activate
+pipenv shell
 ```
 
 ### 3. ライブラリのインストール
@@ -69,7 +68,6 @@ chatgpt-flask-app/
 ├── templates/
 │   └── index.html         # チャット画面（Tailwind対応）
 ├── uploads/               # アップロードファイル保存用
-├── static/                # （必要ならCSSやJS）
 ├── .env                   # OpenAI APIキー
 └── requirements.txt       # 必要ライブラリ一覧
 ```
@@ -124,5 +122,5 @@ MIT License
 
 ## 💠 作者 / Author
 
-- [Your Name](https://github.com/your-username)
+- [yut0takagi](https://github.com/yut0takagi)
 
