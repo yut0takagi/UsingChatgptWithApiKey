@@ -8,10 +8,7 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 
-# 初期化
-load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -42,14 +39,19 @@ def read_file_text(filepath):
     else:
         return "[サポートされていないファイル形式です]"
 
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
     message = data.get("message")
     model = data.get("model", "gpt-3.5-turbo")
     filename = data.get("filename")
+    api_key = data.get("api_key")
 
-    # ファイルがある場合はその中身を message として使う
+    if not api_key:
+        return jsonify({"error": "APIキーが指定されていません"}), 400
+
+    # ファイル読み込み
     if filename:
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(filename))
         if os.path.exists(filepath):
@@ -59,16 +61,22 @@ def chat():
     if not message:
         return jsonify({"error": "メッセージもファイルも指定されていません"}), 400
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "あなたはファイルや文章を読み取り、質問に答えるアシスタントです。"},
-            {"role": "user", "content": message}
-        ]
-    )
+    try:
+        client = OpenAI(api_key=api_key)
 
-    reply = response.choices[0].message.content
-    return jsonify({"reply": reply})
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "あなたはファイルや文章を読み取り、質問に答えるアシスタントです。"},
+                {"role": "user", "content": message}
+            ]
+        )
+
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/upload", methods=["POST"])
 def upload():

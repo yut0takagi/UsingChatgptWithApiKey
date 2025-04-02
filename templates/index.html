@@ -17,7 +17,11 @@
         <option value="gpt-4">gpt-4</option>
       </select>
     </div>
-
+    <div class="mb-4">
+      <label class="block mb-1 text-sm text-gray-300">OpenAI APIキー:</label>
+      <input id="api-key" type="password" placeholder="sk-..." 
+            class="w-full bg-gray-700 p-2 rounded-lg text-white" />
+    </div>
     <!-- チャットボックス -->
     <div id="chat-box" class="h-80 overflow-y-auto bg-gray-700 rounded-lg p-4 space-y-4 mb-4 text-sm"></div>
 
@@ -39,28 +43,31 @@
         アップロード
     </button>
     <div id="upload-status" class="text-sm mt-2 text-green-400"></div>
+    <!-- APIキー入力欄 -->
+
   </div>
 
   <script>
-    async function sendMessage() {
-      const message = document.getElementById("message").value;
-      const model = document.getElementById("model").value;
-      if (!message) return;
+async function sendMessage() {
+  const message = document.getElementById("message").value;
+  const model = document.getElementById("model").value;
+  const apiKey = document.getElementById("api-key").value;
+  if (!message) return;
 
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML += `<div><strong class="text-blue-400">あなた:</strong> ${message}</div>`;
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML += `<div><strong class="text-blue-400">あなた:</strong> ${message}</div>`;
 
-      const response = await fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, model }),
-      });
+  const response = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, model, api_key: apiKey }),
+  });
 
-      const data = await response.json();
-      chatBox.innerHTML += `<div><strong class="text-green-400">GPT:</strong> ${data.reply}</div>`;
-      document.getElementById("message").value = "";
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+  const data = await response.json();
+  chatBox.innerHTML += `<div><strong class="text-green-400">GPT:</strong> ${data.reply}</div>`;
+  document.getElementById("message").value = "";
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
     document.getElementById("upload-form").addEventListener("submit", async (e) => {
   e.preventDefault();
