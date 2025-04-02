@@ -15,7 +15,9 @@
 
 ---
 ## 🚀 セットアップ方法 / Setup(Webアプリから利用する場合)
-
+1. [リンク](https://usingchatgptwithapikey.onrender.com/)から、アクセス   
+    <img src="https://github.com/yut0takagi/UsingChatgptWithApiKey/blob/main/img/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202025-04-02%2017.59.42.png" alt="実行画面">
+2. ChatGPT API KEYとモデルを選択,入力しチャット開始
 
 ## 🚀 セットアップ方法 / Setup(ローカルで利用する場合)
 
